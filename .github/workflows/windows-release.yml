@@ -20,7 +20,10 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: node node_modules/electron/install.js
+      - name: Download and verify official Electron
+        run: python scripts/setup-electron-windows.py
+        env:
+          GH_TOKEN: ${{ github.token }}
       - run: pnpm test
       - run: pnpm check
       - name: Build portable EXE and ZIP
