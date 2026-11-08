@@ -5,6 +5,7 @@ import os
 from pathlib import Path, PurePosixPath
 import shutil
 import subprocess
+import tarfile
 import tempfile
 import time
 import urllib.parse
@@ -99,6 +100,31 @@ def main():
             if os.environ.get('GITHUB_ENV'):
                 with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as environment:
                     environment.write(f'{env_name}={destination}\n')
+            print(f'Official toolset verified: {filename} sha256:{actual}', flush=True)
+        tar_bundles = [
+            ('7zip@1.0.0', '7zip-win-x64.tar.gz', 'be071f15bd6da2f78fe81c6ddef2009b0c4d8a51f36b780cb806c7e6df95e1b3', 'ELECTRON_BUILDER_7ZIP_PATH', 'bin/7za.exe'),
+            ('icons@1.2.3', 'icons-bundle.tar.gz', '4e5bb546c9d3ab0c2bbacc22857467bf415f742a34c2be9dd138779d2fc066f9', 'ELECTRON_BUILDER_ICONS_TOOLSET_DIR', ''),
+        ]
+        for tag, filename, expected, env_name, relative_path in tar_bundles:
+            metadata = temp / (tag + '.json')
+            download(f'https://api.github.com/repos/electron-userland/electron-builder-binaries/releases/tags/{urllib.parse.quote(tag, safe="")}', metadata)
+            asset = next(a for a in json.loads(metadata.read_text(encoding='utf-8'))['assets'] if a['name'] == filename)
+            archive = temp / filename
+            download(asset['url'], archive, binary=True)
+            with archive.open('rb') as stream:
+                actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+            if actual != expected:
+                raise RuntimeError('Official toolset SHA-256 mismatch: ' + filename)
+            destination = ROOT / 'node_modules' / '.silver-cat-tools' / tag
+            destination.mkdir(parents=True, exist_ok=True)
+            with tarfile.open(archive, 'r:gz') as bundle:
+                bundle.extractall(destination, filter='data')
+            tool_path = destination / relative_path
+            if not tool_path.exists():
+                raise RuntimeError('Expected tool path missing: ' + str(tool_path))
+            if os.environ.get('GITHUB_ENV'):
+                with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as environment:
+                    environment.write(f'{env_name}={tool_path}\n')
             print(f'Official toolset verified: {filename} sha256:{actual}', flush=True)
 
 
