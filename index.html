@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; media-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>Silver Cat Pet · 银渐层桌宠</title>
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+  <main class="preview-shell">
+    <header><a class="brand" href="./"><span class="brand-mark">S.</span> SILVER CAT PET</a><span class="version">DESKTOP COMPANION / 01</span></header>
+    <section class="workspace">
+      <aside class="intro">
+        <p class="eyebrow">一只有点小脾气的银渐层</p>
+        <h1>今天也有<br>猫在身边<span>。</span></h1>
+        <p class="lead">会眨眼，会溜达，被点到还会有点不服气。<br>拖动它，找一个喜欢的位置。</p>
+        <div class="status"><span class="status-dot"></span><span id="status">正在准备猫咪…</span></div>
+        <div id="actions" class="actions" aria-label="动作预览"></div>
+        <div class="settings">
+          <label>显示大小 <output id="size-value">240 px</output><input id="size" type="range" min="140" max="360" step="10" value="240"></label>
+          <label>动作间隔 <output id="interval-value">12 秒</output><input id="interval" type="range" min="5" max="60" step="1" value="12"></label>
+          <label class="toggle"><input id="roam" type="checkbox" checked> 自动漫游</label>
+          <label class="toggle"><input id="sound" type="checkbox"> 点击音效</label>
+          <div class="utilities"><button id="pause">暂停</button><button id="center">回到中央</button></div>
+        </div>
+      </aside>
+      <section id="stage" aria-label="猫咪互动区域">
+        <span class="stage-tag">LIVE PREVIEW</span>
+        <canvas id="pet" width="384" height="416" tabindex="0" role="button" aria-label="银渐层猫咪；点击互动，拖动移动，右键菜单"></canvas>
+        <button id="menu-toggle" aria-label="猫咪菜单" title="猫咪菜单">•••</button>
+        <div id="pet-menu" hidden role="menu" aria-label="猫咪菜单"></div>
+        <p class="stage-hint">点一下打招呼 · 拖动搬家 · 右键更多动作</p>
+      </section>
+    </section>
+    <footer><span>本地运行 · 无需账号 · 无需 API Key</span><span>七组动画 / 透明悬浮 / 随时暂停</span></footer>
+  </main>
+  <p id="error" hidden role="alert"></p>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

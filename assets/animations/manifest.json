@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "cellWidth": 384,
+  "cellHeight": 416,
+  "states": {
+    "idle": {
+      "file": "idle.png",
+      "frames": 4,
+      "durations": [
+        1500,
+        350,
+        110,
+        800
+      ],
+      "hold": 0
+    },
+    "walk": {
+      "file": "walk.png",
+      "frames": 4,
+      "durations": [
+        150,
+        150,
+        150,
+        150
+      ],
+      "hold": 4200
+    },
+    "wave": {
+      "file": "wave.png",
+      "frames": 4,
+      "durations": [
+        260,
+        180,
+        240,
+        260
+      ],
+      "hold": 1880
+    },
+    "annoyed": {
+      "file": "annoyed.png",
+      "frames": 4,
+      "durations": [
+        320,
+        260,
+        240,
+        320
+      ],
+      "hold": 2280
+    },
+    "drag": {
+      "file": "drag.png",
+      "frames": 4,
+      "durations": [
+        220,
+        200,
+        220,
+        200
+      ],
+      "hold": 2520
+    },
+    "sleep": {
+      "file": "sleep.png",
+      "frames": 4,
+      "durations": [
+        1000,
+        1000,
+        1000,
+        1000
+      ],
+      "hold": 12000
+    },
+    "jump": {
+      "file": "jump.png",
+      "frames": 4,
+      "durations": [
+        180,
+        150,
+        190,
+        240
+      ],
+      "hold": 760
+    }
+  }
+}

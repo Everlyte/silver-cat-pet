@@ -1,0 +1,32 @@
+{
+  "name": "silver-cat-pet",
+  "version": "0.1.0",
+  "description": "银渐层桌宠：透明悬浮、拖拽、漫游与七组原创动画",
+  "private": true,
+  "type": "module",
+  "main": "electron/main.cjs",
+  "author": "Everlyte",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "https://github.com/Everlyte/silver-cat-pet.git" },
+  "scripts": {
+    "start": "electron .",
+    "preview": "node scripts/serve.mjs",
+    "test": "node --test",
+    "check": "node scripts/check.mjs",
+    "dist:mac": "electron-builder --mac dmg zip --arm64 --publish never",
+    "dist:win": "electron-builder --win portable --x64 --publish never"
+  },
+  "devDependencies": { "electron": "45.2.3", "electron-builder": "26.18.0" },
+  "packageManager": "pnpm@10.30.3",
+  "pnpm": { "onlyBuiltDependencies": ["electron", "app-builder-bin"] },
+  "build": {
+    "appId": "io.github.everlyte.silvercatpet",
+    "productName": "Silver Cat Pet",
+    "asar": true,
+    "directories": { "output": "release" },
+    "files": ["index.html", "src/**/*", "electron/**/*", "assets/animations/**/*", "assets/icon.png", "assets/source/approved-cat.png", "LICENSE", "NOTICE.md"],
+    "mac": { "category": "public.app-category.entertainment", "icon": "assets/icon.png", "identity": null },
+    "win": { "icon": "assets/icon.png", "signAndEditExecutable": false },
+    "artifactName": "silver-cat-pet-${version}-${os}-${arch}.${ext}"
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "states": {
+    "idle": {
+      "frames": 4,
+      "scale": 0.62,
+      "bounds": [
+        [
+          47,
+          79,
+          337,
+          396
+        ],
+        [
+          47,
+          80,
+          336,
+          396
+        ],
+        [
+          47,
+          80,
+          337,
+          396
+        ],
+        [
+          47,
+          79,
+          337,
+          396
+        ]
+      ],
+      "transparent": true,
+      "unclipped": true,
+      "distinctFrames": 4
+    },
+    "walk": {
+      "frames": 4,
+      "scale": 0.62,
+      "bounds": [
+        [
+          40,
+          124,
+          343,
+          396
+        ],
+        [
+          40,
+          124,
+          343,
+          396
+        ],
+        [
+          39,
+          124,
+          345,
+          396
+        ],
+        [
+          39,
+          124,
+          345,
+          396
+        ]
+      ],
+      "transparent": true,
+      "unclipped": true,
+      "distinctFrames": 4
+    },
+    "wave": {
+      "frames": 4,
+      "scale": 0.59,
+      "bounds": [
+        [
+          48,
+          77,
+          335,
+          396
+        ],
+        [
+          49,
+          77,
+          335,
+          396
+        ],
+        [
+          39,
+          77,
+          345,
+          396
+        ],
+        [
+          50,
+          77,
+          334,
+          396
+        ]
+      ],
+      "transparent": true,
+      "unclipped": true,
+      "distinctFrames": 4
+    },
+    "annoyed": {
+      "frames": 4,
+      "scale": 0.68,
+      "bounds": [
+        [
+          39,
+          78,
+          344,
+          396
+        ],
+        [
+          38,
+          86,
+          346,
+          396
+        ],
+        [
+          33,
+          86,
+          350,
+          396
+        ],
+        [
+          40,
+          79,
+          344,
+          396
+        ]
+      ],
+      "transparent": true,
+      "unclipped": true,
+      "distinctFrames": 4
+    },
+    "drag": {
+      "frames": 4,
+      "scale": 0.62,
+      "bounds": [
+        [
+          77,
+          38,
+          306,
+          404
+        ],
+        [
+          80,
+          38,
+          304,
+          388
+        ],
+        [
+          81,
+          38,
+          302,
+          394
+        ],
+        [
+          76,
+          38,
+          307,
+          400
+        ]
+      ],
+      "transparent": true,
+      "unclipped": true,
+      "distinctFrames": 4
+    },
+    "sleep": {
+      "frames": 4,
+      "scale": 0.62,
+      "bounds": [
+        [
+          53,
+          176,
+          331,
+          396
+        ],
+        [
+          54,
+          170,
+          330,
+          396
+        ],
+        [
+          54,
+          170,
+          330,
+          396
+        ],
+        [
+          53,
+          178,
+          331,
+          396
+        ]
+      ],
+      "transparent": true,
+      "unclipped": true,
+      "distinctFrames": 4
+    },
+    "jump": {
+      "frames": 4,
+      "scale": 0.72,
+      "bounds": [
+        [
+          35,
+          154,
+          348,
+          395
+        ],
+        [
+          47,
+          57,
+          336,
+          364
+        ],
+        [
+          46,
+          4,
+          337,
+          329
+        ],
+        [
+          46,
+          108,
+          338,
+          396
+        ]
+      ],
+      "transparent": true,
+      "unclipped": true,
+      "distinctFrames": 4
+    }
+  },
+  "source": "AI-generated animation strips grounded in approved-cat.png"
+}
