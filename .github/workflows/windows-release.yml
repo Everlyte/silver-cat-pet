@@ -1,0 +1,76 @@
+name: Windows x64 release
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: windows-release
+  cancel-in-progress: false
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: node node_modules/electron/install.js
+      - run: pnpm test
+      - run: pnpm check
+      - name: Build portable EXE and ZIP
+        run: pnpm exec electron-builder --win portable zip --x64 --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Smoke-test packaged Windows app
+        shell: pwsh
+        run: |
+          $exe = Join-Path $PWD 'release/win-unpacked/Silver Cat Pet.exe'
+          $process = Start-Process -FilePath $exe -ArgumentList '--smoke-test' -PassThru -RedirectStandardOutput 'release/windows-smoke.log' -RedirectStandardError 'release/windows-smoke-error.log'
+          if (-not $process.WaitForExit(90000)) {
+            $process.Kill()
+            throw 'Packaged Windows startup timed out'
+          }
+          $process.Refresh()
+          Get-Content 'release/windows-smoke.log'
+          Get-Content 'release/windows-smoke-error.log'
+          if ($process.ExitCode -ne 0) { throw "Packaged app exited with $($process.ExitCode)" }
+          if (-not (Select-String -Path 'release/windows-smoke.log' -Pattern 'SMOKE PASS' -Quiet)) { throw 'Missing successful renderer initialization receipt' }
+      - name: Create SHA256 checksums
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem release -File | Where-Object { $_.Extension -in '.exe', '.zip' }
+          if ($files.Count -ne 2) { throw 'Expected one EXE and one ZIP' }
+          $lines = $files | ForEach-Object { "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower())  $($_.Name)" }
+          $lines | Set-Content -Path release/SHA256SUMS.txt -Encoding utf8NoBOM
+          Get-Content release/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: silver-cat-pet-windows-x64
+          path: |
+            release/*.exe
+            release/*.zip
+            release/*.txt
+            release/*.log
+          if-no-files-found: warn
+      - name: Publish Windows release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          $tag = "v$version"
+          $notes = "Windows x64 release. Download the portable EXE, or extract the ZIP and run Silver Cat Pet.exe. Includes seven animations. Built on Windows; unit tests, asset checks and packaged-app startup smoke test passed. Unsigned application: Windows may show a reputation warning. Manual drag/click-through testing on a physical Windows desktop has not been performed. SHA256SUMS.txt is provided for download integrity."
+          gh release create $tag --target $env:GITHUB_SHA --title "Silver Cat Pet $tag · Windows x64" --notes $notes --draft
+          if ($LASTEXITCODE -ne 0) { throw 'Release creation failed; existing releases are never overwritten' }
+          $assets = Get-ChildItem release -File | Where-Object { $_.Extension -in '.exe', '.zip' -or $_.Name -eq 'SHA256SUMS.txt' } | ForEach-Object { $_.FullName }
+          gh release upload $tag @assets
+          if ($LASTEXITCODE -ne 0) { throw 'Asset upload failed; release remains draft' }
+          gh release edit $tag --draft=false
+          if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }
