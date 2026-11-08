@@ -21,7 +21,7 @@ class SafeRedirect(urllib.request.HTTPRedirectHandler):
 
 OPENER = urllib.request.build_opener(SafeRedirect)
 ROOT = Path(__file__).resolve().parent.parent
-VERSION = json.loads((ROOT / 'package.json').read_text())['devDependencies']['electron']
+VERSION = json.loads((ROOT / 'package.json').read_text(encoding='utf-8'))['devDependencies']['electron']
 TOKEN = os.environ.get('GH_TOKEN')
 
 
@@ -47,12 +47,12 @@ def main():
         temp = Path(temporary)
         metadata = temp / 'release.json'
         download(f'https://api.github.com/repos/electron/electron/releases/tags/v{VERSION}', metadata)
-        assets = {a['name']: a for a in json.loads(metadata.read_text())['assets']}
+        assets = {a['name']: a for a in json.loads(metadata.read_text(encoding='utf-8'))['assets']}
         archive, sums = temp / archive_name, temp / 'SHASUMS256.txt'
         download(assets[archive_name]['url'], archive, binary=True)
         download(assets['SHASUMS256.txt']['url'], sums, binary=True)
         checksums = {}
-        for line in sums.read_text().splitlines():
+        for line in sums.read_text(encoding='utf-8').splitlines():
             digest, name = line.split(maxsplit=1)
             checksums[name.lstrip('*')] = digest
         with archive.open('rb') as stream:
@@ -68,9 +68,9 @@ def main():
                 if path.is_absolute() or '..' in path.parts or '\\' in entry.filename or ':' in entry.filename:
                     raise RuntimeError('Unsafe archive member')
             bundle.extractall(destination)
-        if (destination / 'version').read_text().strip() != VERSION:
+        if (destination / 'version').read_text(encoding='utf-8').strip() != VERSION:
             raise RuntimeError('Extracted Electron version mismatch')
-        (destination.parent / 'path.txt').write_text('electron.exe')
+        (destination.parent / 'path.txt').write_text('electron.exe', encoding='utf-8')
         print('Windows Electron distribution ready', flush=True)
 
 
