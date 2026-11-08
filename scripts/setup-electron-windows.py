@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path, PurePosixPath
 import shutil
+import subprocess
 import tempfile
 import time
 import urllib.parse
@@ -72,6 +73,33 @@ def main():
             raise RuntimeError('Extracted Electron version mismatch')
         (destination.parent / 'path.txt').write_text('electron.exe', encoding='utf-8')
         print('Windows Electron distribution ready', flush=True)
+        # Match the pinned electron-builder 26.18.0 legacy NSIS toolset hashes.
+        # Pre-fetch both bundles through the same official asset API.
+        sevenzip = shutil.which('7z') or str(Path(os.environ.get('ProgramFiles', 'C:/Program Files')) / '7-Zip' / '7z.exe')
+        if not Path(sevenzip).is_file():
+            raise RuntimeError('7-Zip is required to unpack verified NSIS bundles')
+        bundles = [
+            ('nsis-3.0.4.1', '9877df902530f96357d13a7a31ae2b9df67f48b11ffc9a1700a7c961574ec5fa', 'ELECTRON_BUILDER_NSIS_DIR'),
+            ('nsis-resources-3.4.1', '593a9a92ef958321293ac6a2ee61e64bf1bd543142a5bd6b3d310709cc924103', 'ELECTRON_BUILDER_NSIS_RESOURCES_DIR'),
+        ]
+        for tag, expected, env_name in bundles:
+            metadata = temp / (tag + '.json')
+            download(f'https://api.github.com/repos/electron-userland/electron-builder-binaries/releases/tags/{tag}', metadata)
+            filename = tag + '.7z'
+            asset = next(a for a in json.loads(metadata.read_text(encoding='utf-8'))['assets'] if a['name'] == filename)
+            archive = temp / filename
+            download(asset['url'], archive, binary=True)
+            with archive.open('rb') as stream:
+                actual = hashlib.file_digest(stream, 'sha256').hexdigest()
+            if actual != expected:
+                raise RuntimeError('Official NSIS SHA-256 mismatch: ' + filename)
+            destination = ROOT / 'node_modules' / '.silver-cat-tools' / tag
+            destination.mkdir(parents=True, exist_ok=True)
+            subprocess.run([sevenzip, 'x', str(archive), '-o' + str(destination), '-y'], check=True, stdout=subprocess.DEVNULL)
+            if os.environ.get('GITHUB_ENV'):
+                with open(os.environ['GITHUB_ENV'], 'a', encoding='utf-8') as environment:
+                    environment.write(f'{env_name}={destination}\n')
+            print(f'Official toolset verified: {filename} sha256:{actual}', flush=True)
 
 
 if __name__ == '__main__':
